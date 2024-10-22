@@ -1,29 +1,95 @@
-import { motion } from 'framer-motion';
+import { useState } from 'react';
 
-export const Testimonials = () => (
-  <section className="py-16 bg-emerald-light text-center">
-    <h2 className="text-4xl font-bold text-emerald-dark mb-8">What Our Students Say</h2>
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <motion.div 
-        className="p-4 bg-white shadow-md rounded-lg"
-        initial={{ opacity: 0, y: 50 }} 
-        whileInView={{ opacity: 1, y: 0 }} 
-        transition={{ duration: 0.8 }}
-      >
-        <p className="mb-4">This college has truly transformed my life. The faculty is amazing, and the courses are challenging yet rewarding.</p>
-        <h4 className="text-xl font-bold">John Doe</h4>
-        <p>Computer Science, Class of 2024</p>
-      </motion.div>
-      <motion.div 
-        className="p-4 bg-white shadow-md rounded-lg"
-        initial={{ opacity: 0, y: 50 }} 
-        whileInView={{ opacity: 1, y: 0 }} 
-        transition={{ duration: 0.8 }}
-      >
-        <p className="mb-4">I gained invaluable skills and made lifelong friends here. The college really prepares you for the real world.</p>
-        <h4 className="text-xl font-bold">Jane Smith</h4>
-        <p>Business Administration, Class of 2023</p>
-      </motion.div>
+const TodoList = () => {
+  const [tasks, setTasks] = useState([]);
+  const [newTask, setNewTask] = useState('');
+
+  // Handle adding a new task
+  const handleAddTask = () => {
+    if (newTask.trim()) {
+      setTasks([...tasks, { id: Date.now(), text: newTask, completed: false }]);
+      setNewTask(''); // Clear input
+    }
+  };
+
+  // Handle completing a task via checkbox only
+  const handleToggleComplete = (taskId) => {
+    setTasks(
+      tasks.map((task) =>
+        task.id === taskId ? { ...task, completed: !task.completed } : task
+      )
+    );
+  };
+
+  // Handle deleting a task
+  const handleDeleteTask = (taskId) => {
+    setTasks(tasks.filter((task) => task.id !== taskId));
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-blue-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+        <h1 className="text-3xl font-bold text-blue-600 mb-6">To-Do List</h1>
+
+        {/* Task Input */}
+        <div className="flex mb-6">
+          <input
+            type="text"
+            className="flex-grow border border-gray-300 p-3 rounded-l-md text-black"
+            placeholder="Add a new task"
+            value={newTask}
+            onChange={(e) => setNewTask(e.target.value)}
+          />
+          <button
+            className="bg-blue-600 text-white px-6 py-3 rounded-r-md hover:bg-blue-700"
+            onClick={handleAddTask}
+          >
+            Add
+          </button>
+        </div>
+
+        {/* Task List */}
+        <ul className="space-y-4">
+          {tasks.map((task) => (
+            <li
+              key={task.id}
+              className={`flex justify-between items-center p-4 border rounded-lg shadow-md ${
+                task.completed ? 'bg-green-100' : 'bg-gray-100'
+              }`}
+            >
+              {/* Checkbox to toggle completed state */}
+              <input
+                type="checkbox"
+                className="mr-3 h-5 w-5 "
+                checked={task.completed}
+                onChange={() => handleToggleComplete(task.id)}
+              />
+              {/* Task Text */}
+              <span
+                className={`flex-grow text-lg ${
+                  task.completed ? 'line-through text-gray-500' : 'text-black'
+                }`}
+              >
+                {task.text}
+              </span>
+              {/* Delete Button */}
+              <button
+                className="text-red-500 hover:text-red-700 ml-4"
+                onClick={() => handleDeleteTask(task.id)}
+              >
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        {/* No tasks message */}
+        {tasks.length === 0 && (
+          <p className="text-gray-500 mt-6 text-center">No tasks yet. Add one!</p>
+        )}
+      </div>
     </div>
-  </section>
-);
+  );
+};
+
+export default TodoList;
